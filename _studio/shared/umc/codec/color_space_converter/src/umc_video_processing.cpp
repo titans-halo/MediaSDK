@@ -167,6 +167,12 @@ Status VideoProcessing::GetFrame(MediaData *input, MediaData *output)
 
   memset(bFiltering, 0, sizeof(bFiltering));
   {
+      // if filter index is out of bound, return error
+      if(iDeinterlacing >= MAX_NUM_FILTERS ||
+         iColorConv >= MAX_NUM_FILTERS     ||
+         iResizing >= MAX_NUM_FILTERS)
+          return UMC_ERR_INVALID_PARAMS;
+
       bFiltering[iDeinterlacing] =
           (Param.m_DeinterlacingMethod != NO_DEINTERLACING) &&
           (in->GetPictureStructure() != PS_FRAME);
@@ -213,6 +219,10 @@ Status VideoProcessing::GetFrame(MediaData *input, MediaData *output)
       }
     }
   }
+
+  // if filter index is out of bound, return error
+  if(numFilters >= MAX_NUM_FILTERS || iColorConv0 >= MAX_NUM_FILTERS)
+      return UMC_ERR_INVALID_PARAMS;
 
   // Get last filter in chain
   int iLastFilter = numFilters - 1;
